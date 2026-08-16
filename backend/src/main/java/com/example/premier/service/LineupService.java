@@ -22,15 +22,18 @@ public class LineupService {
     private final LineupPlayerRepository lineupPlayerRepository;
     private final MatchRepository matchRepository;
     private final TeamRepository teamRepository;
+    private final SeasonSquadService seasonSquadService;
 
     public LineupService(LineupRepository lineupRepository,
                          LineupPlayerRepository lineupPlayerRepository,
                          MatchRepository matchRepository,
-                         TeamRepository teamRepository) {
+                         TeamRepository teamRepository,
+                         SeasonSquadService seasonSquadService) {
         this.lineupRepository = lineupRepository;
         this.lineupPlayerRepository = lineupPlayerRepository;
         this.matchRepository = matchRepository;
         this.teamRepository = teamRepository;
+        this.seasonSquadService = seasonSquadService;
     }
 
     public LineupUpdateDTO getLineups(Long matchId) {
@@ -74,6 +77,10 @@ public class LineupService {
 
         if (payload.getHome() != null) upsert(matchId, match.getHomeTeamId(), payload.getHome());
         if (payload.getAway() != null) upsert(matchId, match.getAwayTeamId(), payload.getAway());
+
+        // 保存阵容后,刷新受影响的 (season, team) 阵容快照
+        seasonSquadService.rebuild(match.getSeason(), match.getHomeTeamId());
+        seasonSquadService.rebuild(match.getSeason(), match.getAwayTeamId());
 
         return getLineups(matchId);
     }

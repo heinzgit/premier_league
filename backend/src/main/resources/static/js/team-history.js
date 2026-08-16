@@ -8,10 +8,15 @@ async function init() {
   const sel = document.getElementById('team-select');
   sel.innerHTML = '<option value="">-- 请选择 --</option>' +
     cachedTeams.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
-  sel.onchange = load;
+  sel.onchange = loadSquad;
 }
 
 async function load() {
+  await loadHistory();
+  await loadSquad();
+}
+
+async function loadHistory() {
   const id = document.getElementById('team-select').value;
   const tbody = document.querySelector('#history-table tbody');
   const summary = document.getElementById('summary');
@@ -47,6 +52,37 @@ async function load() {
         <td><span class="result-tag result-${h.result}">${h.result === 'WIN' ? '胜' : h.result === 'DRAW' ? '平' : '负'}</span></td>
       </tr>
     `).join('');
+  } catch (e) {
+    toast(e.message, 'error');
+  }
+}
+
+async function loadSquad() {
+  const id = document.getElementById('team-select').value;
+  const season = document.getElementById('season-input').value.trim();
+  const card = document.getElementById('squad-card');
+  const list = document.getElementById('squad-list');
+  const title = document.getElementById('squad-title');
+  list.innerHTML = '';
+  if (!id || !season) {
+    card.style.display = 'none';
+    return;
+  }
+  try {
+    const squad = await API.teams.squad(id, season);
+    if (!squad.length) {
+      title.textContent = `(${season})`;
+      list.innerHTML = '<div class="empty" style="grid-column:1/-1">该赛季暂无阵容记录,请在比赛录入中维护阵容</div>';
+      card.style.display = '';
+      return;
+    }
+    title.textContent = `(${season} · ${squad.length} 人)`;
+    list.innerHTML = squad.map(p => `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f9fafb;border-radius:4px">
+        <span class="badge" style="background:#38003c;color:#fff;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">${escapeHtml(p.shirtNumber || '-')}</span>
+        <span style="font-weight:500">${escapeHtml(p.playerName)}</span>
+      </div>`).join('');
+    card.style.display = '';
   } catch (e) {
     toast(e.message, 'error');
   }

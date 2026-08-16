@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>赛季阵容</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    .squad-team-card { margin-bottom: 16px; }
+    .squad-team-card h3 {
+      margin: 0 0 8px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .squad-team-card h3 .count {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: normal;
+    }
+    .squad-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 8px;
+    }
+    .squad-player {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: #f9fafb;
+      border-radius: 4px;
+    }
+    .squad-player .num {
+      background: #38003c;
+      color: #fff;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .squad-player .name { font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+  <main>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:end">
+        <h2 style="margin:0">赛季阵容</h2>
+        <div>
+          <label style="display:inline;margin-right:6px">赛季</label>
+          <input id="season-input" style="width:160px;display:inline-block" placeholder="如 2025-2026" />
+          <button class="btn" onclick="load()">查询</button>
+        </div>
+      </div>
+      <p style="font-size:12px;color:#6b7280;margin:8px 0 0">
+        数据从阵容录入聚合而来,保存比赛阵容时自动更新。
+      </p>
+    </div>
+
+    <div id="squads"></div>
+  </main>
+  <script src="/js/api.js"></script>
+  <script src="/js/squads.js"></script>
+</body>
+</html>

@@ -31,6 +31,7 @@ const API = (() => {
       update: (id, data) => request(`/teams/${id}`, { method: 'PUT', body: data }),
       remove: (id) => request(`/teams/${id}`, { method: 'DELETE' }),
       history: (id) => request(`/teams/${id}/history`),
+      squad: (id, season) => request(`/teams/${id}/squad?season=${encodeURIComponent(season)}`),
     },
     matches: {
       list: (season) => request('/matches' + (season ? `?season=${encodeURIComponent(season)}` : '')),
@@ -42,6 +43,7 @@ const API = (() => {
     standings: (season) => request('/standings' + (season ? `?season=${encodeURIComponent(season)}` : '')),
     scorers: (season) => request('/scorers' + (season ? `?season=${encodeURIComponent(season)}` : '')),
     matrix: (season) => request('/matrix' + (season ? `?season=${encodeURIComponent(season)}` : '')),
+    seasonSquads: (season) => request('/season-squads?season=' + encodeURIComponent(season)),
     lineups: {
       get: (matchId) => request(`/matches/${matchId}/lineups`),
       save: (matchId, data) => request(`/matches/${matchId}/lineups`, { method: 'PUT', body: data }),
@@ -67,6 +69,7 @@ function renderHeader(active) {
     { href: '/standings.html', label: '积分榜', key: 'standings' },
     { href: '/scorers.html', label: '射手榜', key: 'scorers' },
     { href: '/matrix.html', label: '对阵矩阵', key: 'matrix' },
+    { href: '/squads.html', label: '赛季阵容', key: 'squads' },
     { href: '/team-history.html', label: '球队历史', key: 'history' },
   ];
   const nav = links.map(l =>

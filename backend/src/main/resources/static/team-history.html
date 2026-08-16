@@ -10,16 +10,30 @@
   <main>
     <div class="card">
       <h2>球队历史战绩</h2>
-      <div style="margin-bottom:16px">
-        <label>选择球队</label>
-        <select id="team-select" style="max-width:300px"></select>
-        <button class="btn" onclick="load()">查询</button>
+      <div style="display:flex;gap:12px;align-items:end;margin-bottom:16px">
+        <div>
+          <label>选择球队</label>
+          <select id="team-select" style="max-width:300px"></select>
+        </div>
+        <div>
+          <label>赛季 (用于阵容查询)</label>
+          <input id="season-input" style="width:160px" placeholder="如 2025-2026" />
+          <button class="btn" onclick="load()">查询</button>
+        </div>
       </div>
       <div id="summary"></div>
       <table id="history-table">
         <thead><tr><th>日期</th><th>赛季</th><th>对手</th><th>主/客</th><th>比分</th><th>结果</th></tr></thead>
         <tbody></tbody>
       </table>
+    </div>
+
+    <div class="card" id="squad-card" style="display:none">
+      <h2>本赛季阵容 <span id="squad-title" style="font-size:14px;color:#6b7280;font-weight:normal"></span></h2>
+      <div style="font-size:12px;color:#6b7280;margin-bottom:8px">
+        从比赛阵容聚合得到,保存阵容时自动更新
+      </div>
+      <div id="squad-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px"></div>
     </div>
   </main>
   <script src="/js/api.js"></script>

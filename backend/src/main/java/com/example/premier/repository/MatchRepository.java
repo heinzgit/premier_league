@@ -18,4 +18,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     @Query("SELECT COUNT(m) FROM Match m WHERE m.homeTeamId = :teamId OR m.awayTeamId = :teamId")
     long countByAnyTeam(@Param("teamId") Long teamId);
+
+    @Query("SELECT m FROM Match m WHERE m.season = :season AND (m.homeTeamId = :teamId OR m.awayTeamId = :teamId) ORDER BY m.matchDate DESC")
+    List<Match> findBySeasonAndTeam(@Param("season") String season, @Param("teamId") Long teamId);
 }

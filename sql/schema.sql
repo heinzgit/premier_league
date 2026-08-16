@@ -80,3 +80,17 @@ CREATE TABLE IF NOT EXISTS lineup_players (
 -- 已有库需要执行 (幂等):
 -- ALTER TABLE lineup_players ADD COLUMN pos_x INT NULL, ADD COLUMN pos_y INT NULL;
 -- ALTER TABLE lineup_players ADD COLUMN shirt_number VARCHAR(10) NULL;
+
+-- 赛季阵容 (从 lineups 聚合而来, 保存阵容时自动维护)
+CREATE TABLE IF NOT EXISTS season_squads (
+  id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+  season       VARCHAR(20) NOT NULL,
+  team_id      BIGINT NOT NULL,
+  player_name  VARCHAR(100) NOT NULL,
+  shirt_number VARCHAR(10),                  -- 最近一次出场时的球衣号码
+  updated_at   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT uq_squad_member UNIQUE (season, team_id, player_name),
+  CONSTRAINT fk_squad_team FOREIGN KEY (team_id) REFERENCES teams(id),
+  INDEX idx_squad_season (season),
+  INDEX idx_squad_team   (team_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
