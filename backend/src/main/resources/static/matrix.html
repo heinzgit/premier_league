@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>对阵矩阵</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    main { max-width: none; padding: 0 16px; }
+    .matrix-wrap {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 80vh;
+      max-width: 100%;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+    }
+    table.matrix {
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: max-content;
+    }
+    table.matrix th, table.matrix td {
+      border: 1px solid #e5e7eb;
+      padding: 4px 8px;
+      white-space: nowrap;
+      text-align: center;
+    }
+    table.matrix th {
+      background: #38003c;
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    table.matrix th.row-header {
+      background: #38003c;
+      color: #fff;
+      position: sticky;
+      left: 0;
+      z-index: 3;
+    }
+    table.matrix th.corner { z-index: 4; }
+    table.matrix td.team-name {
+      background: #f9fafb;
+      font-weight: 600;
+      position: sticky;
+      left: 0;
+      z-index: 1;
+      text-align: left;
+    }
+    table.matrix td.self { background: #f3f4f6; color: #9ca3af; }
+    .match-cell { min-width: 72px; }
+    .match-cell .line { display: block; line-height: 1.4; }
+    .match-cell .line.home { color: #166534; }
+    .match-cell .line.away { color: #1d4ed8; }
+    .cell-win { background: #dcfce7; }
+    .cell-draw { background: #fef3c7; }
+    .cell-loss { background: #fee2e2; }
+    .cell-empty { background: #fff; color: #9ca3af; }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+  <main>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h2 style="margin:0">对阵矩阵</h2>
+        <div>
+          <label style="display:inline;margin-right:6px">赛季</label>
+          <input id="season-input" style="width:160px;display:inline-block" placeholder="如 2025-2026,留空看全部" />
+          <button class="btn" onclick="load()">查询</button>
+        </div>
+      </div>
+      <p style="font-size:12px;color:#6b7280;margin:0 0 12px">
+        行=主队视角 / 列=对手。单元格显示该行球队与该列球队的两回合比赛比分(主/客);
+        单元格颜色表示该行球队的总战绩(绿=胜,黄=平,红=负)。
+      </p>
+      <div class="matrix-wrap">
+        <table class="matrix" id="matrix"></table>
+      </div>
+    </div>
+  </main>
+  <script src="/js/api.js"></script>
+  <script src="/js/matrix.js"></script>
+</body>
+</html>

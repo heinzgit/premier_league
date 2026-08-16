@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>球队管理</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div id="nav"></div>
+  <main>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h2>球队管理</h2>
+        <button class="btn" onclick="openCreateModal()">+ 新增球队</button>
+      </div>
+      <table id="team-table">
+        <thead>
+          <tr>
+            <th>ID</th><th>名称</th><th>简称</th><th>成立年份</th><th>球场</th><th>城市</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+
+  <div id="modal-host"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/teams.js"></script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>英超数据录入</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div id="nav"></div>
+  <main>
+    <div class="card">
+      <h2>欢迎使用英超数据录入系统</h2>
+      <p>本系统用于录入英超比赛数据,并自动计算积分榜、射手榜,以及查询球队历史战绩。</p>
+      <ul>
+        <li><a href="/teams.html">球队管理</a> — 维护所有参赛球队信息</li>
+        <li><a href="/matches.html">比赛录入</a> — 录入比赛结果和进球者</li>
+        <li><a href="/standings.html">积分榜</a> — 按积分自动排名</li>
+        <li><a href="/scorers.html">射手榜</a> — 按进球数自动排名</li>
+        <li><a href="/matrix.html">对阵矩阵</a> — 各队两回合交手比分总览</li>
+        <li><a href="/team-history.html">球队历史</a> — 查看单支球队所有比赛</li>
+      </ul>
+    </div>
+  </main>
+  <script src="/js/api.js"></script>
+  <script>
+    document.getElementById('nav').innerHTML = renderHeader('home');
+  </script>
+</body>
+</html>
