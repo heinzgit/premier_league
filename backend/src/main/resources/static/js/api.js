@@ -42,6 +42,10 @@ const API = (() => {
     standings: (season) => request('/standings' + (season ? `?season=${encodeURIComponent(season)}` : '')),
     scorers: (season) => request('/scorers' + (season ? `?season=${encodeURIComponent(season)}` : '')),
     matrix: (season) => request('/matrix' + (season ? `?season=${encodeURIComponent(season)}` : '')),
+    lineups: {
+      get: (matchId) => request(`/matches/${matchId}/lineups`),
+      save: (matchId, data) => request(`/matches/${matchId}/lineups`, { method: 'PUT', body: data }),
+    },
   };
 })();
 

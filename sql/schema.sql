@@ -49,3 +49,34 @@ CREATE TABLE IF NOT EXISTS goals (
   INDEX idx_goals_match  (match_id),
   INDEX idx_goals_team   (team_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 阵容表:每场比赛每队一条 (lineup per match per team)
+CREATE TABLE IF NOT EXISTS lineups (
+  id        BIGINT AUTO_INCREMENT PRIMARY KEY,
+  match_id  BIGINT NOT NULL,
+  team_id   BIGINT NOT NULL,
+  formation VARCHAR(20),                  -- 例如 "4-3-3"
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT uq_lineup_match_team UNIQUE (match_id, team_id),
+  CONSTRAINT fk_lineup_match FOREIGN KEY (match_id) REFERENCES matches(id) ON DELETE CASCADE,
+  CONSTRAINT fk_lineup_team  FOREIGN KEY (team_id)  REFERENCES teams(id),
+  INDEX idx_lineup_match (match_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 阵容球员
+CREATE TABLE IF NOT EXISTS lineup_players (
+  id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+  lineup_id     BIGINT NOT NULL,
+  player_name   VARCHAR(100) NOT NULL,
+  position      VARCHAR(20),                -- 例如 GK/DF/MF/FW, 也可更细 LB/CB/RB 等
+  display_order INT NOT NULL DEFAULT 0,    -- 1..11,用于展示顺序
+  pos_x         INT,                       -- 自定义阵型时球场坐标 (0-100 百分比), NULL 用预设阵型默认
+  pos_y         INT,
+  shirt_number  VARCHAR(10),               -- 球衣号码, 用户自由输入
+  CONSTRAINT fk_lp_lineup FOREIGN KEY (lineup_id) REFERENCES lineups(id) ON DELETE CASCADE,
+  INDEX idx_lp_lineup (lineup_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 已有库需要执行 (幂等):
+-- ALTER TABLE lineup_players ADD COLUMN pos_x INT NULL, ADD COLUMN pos_y INT NULL;
+-- ALTER TABLE lineup_players ADD COLUMN shirt_number VARCHAR(10) NULL;
