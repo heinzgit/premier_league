@@ -1,6 +1,9 @@
 document.getElementById('nav').innerHTML = renderHeader('matches');
 
 let cachedTeams = [];
+let allMatches = [];
+let currentPage = 1;
+const PAGE_SIZE = 20;
 
 async function loadTeams() {
   cachedTeams = await API.teams.list();
@@ -9,34 +12,69 @@ async function loadTeams() {
 
 async function loadMatches() {
   try {
-    const matches = await API.matches.list();
-    const tbody = document.querySelector('#match-table tbody');
-    if (!matches.length) {
-      tbody.innerHTML = '<tr><td colspan="8" class="empty">还没有比赛,点击新增</td></tr>';
-      return;
-    }
-    tbody.innerHTML = matches.map(m => {
-      const goalsHtml = m.goals.length
-        ? m.goals.map(g => `<div>${g.minute != null ? g.minute + "' " : ''}${escapeHtml(g.scorerName)}${g.goalType === 'PENALTY' ? ' (点)' : ''}${g.goalType === 'OWN_GOAL' ? ' (乌)' : ''}</div>`).join('')
-        : '<span style="color:#9ca3af">无进球详情</span>';
-      return `
-        <tr>
-          <td>${m.matchDate}</td>
-          <td>${escapeHtml(m.season)}</td>
-          <td>${escapeHtml(m.homeTeamName)}</td>
-          <td><b>${m.homeScore} - ${m.awayScore}</b></td>
-          <td>${escapeHtml(m.awayTeamName)}</td>
-          <td style="font-size:12px">${goalsHtml}</td>
-          <td><button class="btn small secondary" onclick="openLineupModal(${m.id})">阵容</button></td>
-          <td class="actions">
-            <button class="btn small secondary" onclick='openEditModal(${JSON.stringify(m).replace(/'/g, "\\'")})'>编辑</button>
-            <button class="btn small danger" onclick="deleteMatch(${m.id})">删除</button>
-          </td>
-        </tr>`;
-    }).join('');
+    allMatches = await API.matches.list();
+    // 按比赛日期降序排 (字符串 yyyy-MM-dd 可直接比较)
+    allMatches.sort((a, b) => b.matchDate.localeCompare(a.matchDate));
+    currentPage = 1;
+    renderPage();
   } catch (e) {
     toast(e.message, 'error');
   }
+}
+
+function renderPage() {
+  const tbody = document.querySelector('#match-table tbody');
+  if (!allMatches.length) {
+    tbody.innerHTML = '<tr><td colspan="8" class="empty">还没有比赛,点击新增</td></tr>';
+    renderPager(0);
+    return;
+  }
+  const totalPages = Math.max(1, Math.ceil(allMatches.length / PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageRows = allMatches.slice(start, start + PAGE_SIZE);
+
+  tbody.innerHTML = pageRows.map(m => {
+    const goalsHtml = m.goals.length
+      ? m.goals.map(g => `<div>${g.minute != null ? g.minute + "' " : ''}${escapeHtml(g.scorerName)}${g.goalType === 'PENALTY' ? ' (点)' : ''}${g.goalType === 'OWN_GOAL' ? ' (乌)' : ''}</div>`).join('')
+      : '<span style="color:#9ca3af">无进球详情</span>';
+    return `
+      <tr>
+        <td>${m.matchDate}</td>
+        <td>${escapeHtml(m.season)}</td>
+        <td>${escapeHtml(m.homeTeamName)}</td>
+        <td><b>${m.homeScore} - ${m.awayScore}</b></td>
+        <td>${escapeHtml(m.awayTeamName)}</td>
+        <td style="font-size:12px">${goalsHtml}</td>
+        <td><button class="btn small secondary" onclick="openLineupModal(${m.id})">阵容</button></td>
+        <td class="actions">
+          <button class="btn small secondary" onclick='openEditModal(${JSON.stringify(m).replace(/'/g, "\\'")})'>编辑</button>
+          <button class="btn small danger" onclick="deleteMatch(${m.id})">删除</button>
+        </td>
+      </tr>`;
+  }).join('');
+  renderPager(totalPages);
+}
+
+function renderPager(totalPages) {
+  let pager = document.getElementById('match-pager');
+  if (!pager) {
+    pager = document.createElement('div');
+    pager.id = 'match-pager';
+    pager.style.cssText = 'display:flex;justify-content:flex-end;gap:8px;align-items:center;margin-top:12px;font-size:13px;color:#6b7280';
+    document.querySelector('#match-table').after(pager);
+  }
+  if (totalPages === 0) { pager.innerHTML = ''; return; }
+  pager.innerHTML = `
+    <span>共 ${allMatches.length} 条 · 第 ${currentPage} / ${totalPages} 页</span>
+    <button class="btn small secondary" ${currentPage <= 1 ? 'disabled' : ''} onclick="goPage(${currentPage - 1})">上一页</button>
+    <button class="btn small secondary" ${currentPage >= totalPages ? 'disabled' : ''} onclick="goPage(${currentPage + 1})">下一页</button>
+  `;
+}
+
+function goPage(p) {
+  currentPage = p;
+  renderPage();
 }
 
 function openCreateModal() { renderForm(null); }

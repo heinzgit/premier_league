@@ -56,12 +56,35 @@ public class StandingService {
             }
         }
 
+        map.values().forEach(s -> s.setGoalDifference(s.getGoalsFor() - s.getGoalsAgainst()));
+
+        // 相互战绩:只计入与同积分/净胜球/进球数完全相同的对手之间的比赛积分
+        Map<Long, Integer> h2hPoints = new HashMap<>();
+        for (Match m : matches) {
+            StandingDTO home = map.get(m.getHomeTeamId());
+            StandingDTO away = map.get(m.getAwayTeamId());
+            if (home.getPoints() != away.getPoints()
+                    || home.getGoalDifference() != away.getGoalDifference()
+                    || home.getGoalsFor() != away.getGoalsFor()) {
+                continue;
+            }
+            if (m.getHomeScore() > m.getAwayScore()) {
+                h2hPoints.merge(m.getHomeTeamId(), 3, Integer::sum);
+            } else if (m.getHomeScore() < m.getAwayScore()) {
+                h2hPoints.merge(m.getAwayTeamId(), 3, Integer::sum);
+            } else {
+                h2hPoints.merge(m.getHomeTeamId(), 1, Integer::sum);
+                h2hPoints.merge(m.getAwayTeamId(), 1, Integer::sum);
+            }
+        }
+
         return map.values().stream()
-                .peek(s -> s.setGoalDifference(s.getGoalsFor() - s.getGoalsAgainst()))
                 .sorted(Comparator
                         .comparingInt(StandingDTO::getPoints).reversed()
-                        .thenComparingInt(StandingDTO::getGoalDifference).reversed()
-                        .thenComparingInt(StandingDTO::getGoalsFor).reversed()
+                        .thenComparing(Comparator.comparingInt(StandingDTO::getGoalDifference).reversed())
+                        .thenComparing(Comparator.comparingInt(StandingDTO::getGoalsFor).reversed())
+                        .thenComparing(Comparator.comparingInt(
+                                (StandingDTO s) -> h2hPoints.getOrDefault(s.getTeamId(), 0)).reversed())
                         .thenComparing(StandingDTO::getTeamName))
                 .toList();
     }
