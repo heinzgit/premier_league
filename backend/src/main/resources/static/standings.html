@@ -9,7 +9,7 @@
   <div id="nav"></div>
   <main>
     <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
         <h2 style="margin:0">积分榜</h2>
         <div>
           <label style="display:inline;margin-right:6px">赛季</label>
@@ -26,9 +26,17 @@
         </thead>
         <tbody></tbody>
       </table>
+      <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e5e7eb;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span style="font-size:13px;color:#6b7280">保存当前排名为快照:</span>
+        <label style="font-size:13px">轮次</label>
+        <input id="snap-round" type="number" min="1" style="width:70px" />
+        <input id="snap-note" type="text" placeholder="备注(可选)" style="width:200px" />
+        <button class="btn" id="snap-save-btn" onclick="saveSnapshot()">保存本轮快照</button>
+        <a href="/rank-history.html" style="margin-left:auto;font-size:13px">查看排名历史 →</a>
+      </div>
     </div>
   </main>
-  <script src="/js/api.js"></script>
-  <script src="/js/standings.js"></script>
+  <script src="/js/api.js?v=3"></script>
+  <script src="/js/standings.js?v=2"></script>
 </body>
 </html>

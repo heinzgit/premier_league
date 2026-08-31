@@ -94,3 +94,27 @@ CREATE TABLE IF NOT EXISTS season_squads (
   INDEX idx_squad_season (season),
   INDEX idx_squad_team   (team_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 排名快照 (每个轮次手动保存一次, 用于回看排名变化)
+CREATE TABLE IF NOT EXISTS standing_snapshots (
+  id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+  season        VARCHAR(20) NOT NULL,
+  round_number  INT NOT NULL,
+  snapshot_date DATE NOT NULL,
+  note          VARCHAR(200),
+  created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT uk_ss_season_round UNIQUE (season, round_number),
+  INDEX idx_ss_season (season)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 快照条目:每个快照当时每队的排名
+CREATE TABLE IF NOT EXISTS standing_snapshot_entries (
+  id            BIGINT AUTO_INCREMENT PRIMARY KEY,
+  snapshot_id   BIGINT NOT NULL,
+  team_id       BIGINT NOT NULL,
+  rank_position INT NOT NULL,
+  CONSTRAINT fk_sse_snapshot FOREIGN KEY (snapshot_id) REFERENCES standing_snapshots(id) ON DELETE CASCADE,
+  CONSTRAINT fk_sse_team     FOREIGN KEY (team_id)     REFERENCES teams(id),
+  INDEX idx_sse_snapshot (snapshot_id),
+  INDEX idx_sse_team     (team_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

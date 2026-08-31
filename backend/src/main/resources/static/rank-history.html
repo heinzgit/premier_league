@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>排名历史</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div id="nav"></div>
+  <main>
+    <div class="card">
+      <h2>排名历史</h2>
+      <div style="display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin-bottom:16px">
+        <div>
+          <label>赛季</label>
+          <input id="season-input" style="width:160px" placeholder="如 2025-2026" />
+        </div>
+        <div>
+          <label>球队</label>
+          <select id="team-select" style="min-width:200px"></select>
+        </div>
+        <button class="btn" onclick="load()">查询</button>
+      </div>
+      <div id="empty-hint" style="color:#6b7280;font-size:13px">请先在积分榜页面保存至少一轮快照,再来查看排名变化</div>
+      <div id="chart-wrap" style="display:none;max-width:760px;margin:0 auto 20px">
+        <canvas id="rank-chart"></canvas>
+      </div>
+      <table id="history-table" style="display:none">
+        <thead>
+          <tr><th>轮次</th><th>快照日期</th><th>排名</th><th>变化</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+  <script src="/js/api.js?v=3"></script>
+  <script src="/js/rank-history.js?v=2"></script>
+</body>
+</html>

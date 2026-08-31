@@ -193,12 +193,6 @@ async function deleteMatch(id) {
   }
 }
 
-function defaultSeason() {
-  const y = new Date().getFullYear();
-  const m = new Date().getMonth() + 1;
-  return m >= 8 ? `${y}-${y+1}` : `${y-1}-${y}`;
-}
-
 function closeModal() { document.getElementById('modal-host').innerHTML = ''; }
 
 // ===== 阵容 (球场可视化) =====

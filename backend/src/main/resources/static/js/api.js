@@ -44,6 +44,13 @@ const API = (() => {
     scorers: (season) => request('/scorers' + (season ? `?season=${encodeURIComponent(season)}` : '')),
     matrix: (season) => request('/matrix' + (season ? `?season=${encodeURIComponent(season)}` : '')),
     seasonSquads: (season) => request('/season-squads?season=' + encodeURIComponent(season)),
+    snapshots: {
+      list: (season) => request(`/standing-snapshots?season=${encodeURIComponent(season)}`),
+      get: (id) => request(`/standing-snapshots/${id}`),
+      create: (data) => request('/standing-snapshots', { method: 'POST', body: data }),
+      remove: (id) => request(`/standing-snapshots/${id}`, { method: 'DELETE' }),
+      progression: (teamId, season) => request(`/standing-snapshots/teams/${teamId}/progression?season=${encodeURIComponent(season)}`),
+    },
     lineups: {
       get: (matchId) => request(`/matches/${matchId}/lineups`),
       save: (matchId, data) => request(`/matches/${matchId}/lineups`, { method: 'PUT', body: data }),
@@ -60,6 +67,13 @@ function toast(msg, type = '') {
   setTimeout(() => el.remove(), 2500);
 }
 
+// 当前赛季: 8 月及以后算新赛季 (YYYY-(YYYY+1)), 否则算上一赛季 ((YYYY-1)-YYYY)
+function defaultSeason() {
+  const y = new Date().getFullYear();
+  const m = new Date().getMonth() + 1;
+  return m >= 8 ? `${y}-${y + 1}` : `${y - 1}-${y}`;
+}
+
 // 渲染 header (导航)
 function renderHeader(active) {
   const links = [
@@ -67,6 +81,7 @@ function renderHeader(active) {
     { href: '/teams.html', label: '球队管理', key: 'teams' },
     { href: '/matches.html', label: '比赛录入', key: 'matches' },
     { href: '/standings.html', label: '积分榜', key: 'standings' },
+    { href: '/rank-history.html', label: '排名历史', key: 'rank-history' },
     { href: '/scorers.html', label: '射手榜', key: 'scorers' },
     { href: '/matrix.html', label: '对阵矩阵', key: 'matrix' },
     { href: '/squads.html', label: '赛季阵容', key: 'squads' },
